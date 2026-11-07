@@ -1,0 +1,604 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0f766e">
+<title>我的中文书 — My Chinese Book</title>
+<style>
+:root{
+  --bg:#fdfcf9;--card:#fff;--text:#2b2b2b;--muted:#8a8a8a;--border:#e8e6e1;
+  --accent:#0f766e;--accent-soft:#e6f2f1;--danger:#c0392b;--input:#faf9f6;
+  --ok:#16a34a;--mid:#d97706;--bad:#dc2626;
+}
+[data-theme="dark"]{
+  --bg:#15171b;--card:#1e2126;--text:#e9e9e9;--muted:#8b9099;--border:#2b2f36;
+  --accent:#2dd4bf;--accent-soft:#18322f;--danger:#f87171;--input:#262a31;
+  --ok:#4ade80;--mid:#fbbf24;--bad:#f87171;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:-apple-system,"Segoe UI","Noto Sans SC",sans-serif;
+  background:var(--bg);color:var(--text);line-height:1.5;
+  max-width:720px;margin:0 auto;padding:14px 14px 90px;
+  transition:background .2s,color .2s;
+}
+h1{font-size:20px;letter-spacing:.5px}
+.sub{font-size:12px;color:var(--muted)}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+input,select,button{font-family:inherit;font-size:15px;color:var(--text)}
+input,select{
+  width:100%;padding:10px;border:1px solid var(--border);border-radius:9px;
+  background:var(--input);margin-bottom:8px;
+}
+input:focus,select:focus{outline:2px solid var(--accent-soft);border-color:var(--accent)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px;margin-bottom:12px}
+.row2{display:flex;gap:8px}
+.row2>*{flex:1}
+.btn{
+  background:var(--accent);color:#fff;border:none;padding:10px 16px;
+  border-radius:9px;cursor:pointer;font-weight:600;white-space:nowrap;
+}
+.btn:active{transform:scale(.97)}
+.btn.ghost{background:transparent;color:var(--muted);border:1px solid var(--border)}
+.btn.ok{background:var(--ok)}
+.btn.mid{background:var(--mid)}
+.btn.danger{background:var(--bad)}
+.icon{background:none;border:none;cursor:pointer;font-size:16px;padding:4px;opacity:.75}
+.icon:active{opacity:1}
+.toolbar{margin-bottom:10px}
+.chips{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.chip{
+  background:var(--card);border:1px solid var(--border);border-radius:20px;
+  padding:6px 13px;cursor:pointer;font-size:13px;color:var(--muted);
+}
+.chip.active{background:var(--accent);border-color:var(--accent);color:#fff}
+#sort{width:auto;flex:1;margin:0;padding:6px 8px;font-size:13px}
+.item{
+  background:var(--card);border:1px solid var(--border);border-radius:12px;
+  padding:11px 12px;margin-bottom:8px;display:flex;justify-content:space-between;gap:8px;
+}
+.item-main{flex:1;min-width:0}
+.hz-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.hz{font-size:21px;font-weight:600;word-break:break-word}
+.py{color:var(--accent);font-size:13px;margin-top:1px}
+.mean{font-size:14px;color:var(--muted);margin-top:1px}
+.mark{font-size:15px;font-weight:700}
+.m-ok{color:var(--ok)}.m-mid{color:var(--mid)}.m-bad{color:var(--bad)}
+.actions{display:flex;flex-direction:column;gap:2px;align-items:center}
+.empty{color:var(--muted);text-align:center;padding:34px 16px;font-size:14px}
+nav{
+  position:fixed;bottom:0;left:0;right:0;background:var(--card);
+  border-top:1px solid var(--border);display:flex;z-index:50;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.nav-btn{
+  flex:1;background:none;border:none;cursor:pointer;padding:9px 0 10px;
+  display:flex;flex-direction:column;align-items:center;gap:1px;
+  font-size:10px;color:var(--muted);letter-spacing:.3px;
+}
+.nav-btn span{font-size:19px;line-height:1.1}
+.nav-btn.active{color:var(--accent)}
+.modal{
+  position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;
+  align-items:center;justify-content:center;padding:16px;z-index:100;
+}
+.modal-box{
+  background:var(--card);border-radius:16px;padding:18px;width:100%;max-width:400px;
+}
+.modal-box h3{font-size:16px;margin-bottom:12px}
+.modal-actions{display:flex;gap:8px;margin-top:6px}
+.modal-actions .btn{flex:1}
+.quiz-card{
+  background:var(--card);border:1px solid var(--border);border-radius:16px;
+  padding:40px 18px;text-align:center;cursor:pointer;margin-bottom:12px;
+  min-height:170px;display:flex;flex-direction:column;justify-content:center;gap:12px;
+}
+.quiz-front{font-size:34px;font-weight:600;word-break:break-word}
+.quiz-back{font-size:20px;color:var(--accent)}
+.quiz-hint{font-size:13px;color:var(--muted)}
+.quiz-btns{display:flex;gap:8px;margin-bottom:12px}
+.quiz-btns .btn{flex:1;padding:13px 6px;font-size:14px}
+.quiz-progress{text-align:center;font-size:13px;color:var(--muted);margin-bottom:10px}
+.quiz-toggle{display:flex;gap:8px;justify-content:center}
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 8px;text-align:center}
+.stat b{display:block;font-size:24px;color:var(--accent)}
+.stat small{font-size:11px;color:var(--muted)}
+.bar-row{display:flex;align-items:center;gap:8px;margin-bottom:7px;font-size:13px}
+.bar-row .lbl{width:22px;font-weight:700}
+.bar{flex:1;height:9px;background:var(--border);border-radius:5px;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:5px}
+.bar-row .num{width:26px;text-align:right;color:var(--muted);font-size:12px}
+.section-title{font-size:12px;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin:16px 0 8px}
+.week-item{font-size:14px;padding:5px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between}
+.week-item:last-child{border:none}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>我的中文书</h1>
+    <div class="sub">🔥 <span id="streak">1</span>-day streak</div>
+  </div>
+  <button class="icon" id="darkBtn" onclick="toggleDark()" style="font-size:22px">🌙</button>
+</header>
+
+<main>
+  <!-- WORDS -->
+  <section id="panel-words" class="panel">
+    <div class="card">
+      <input id="w-hz" placeholder="汉字" autocomplete="off">
+      <div class="row2">
+        <input id="w-py" placeholder="Pinyin" autocomplete="off">
+        <input id="w-mean" placeholder="Meaning" autocomplete="off">
+      </div>
+      <div class="row2">
+        <select id="w-mark">
+          <option value="✓">✓ Can use</option>
+          <option value="◐" selected>◐ Recognize</option>
+          <option value="✗">✗ Keep forgetting</option>
+        </select>
+        <button class="btn" onclick="addWord()">+ Add</button>
+      </div>
+    </div>
+    <div class="toolbar">
+      <input id="search" placeholder="🔍 Search 汉字 / pinyin / meaning" oninput="state.search=this.value;renderWords()">
+      <div class="chips">
+        <button class="chip active" data-filter="all" onclick="setFilter('all')">All</button>
+        <button class="chip" data-filter="✓" onclick="setFilter('✓')">✓</button>
+        <button class="chip" data-filter="◐" onclick="setFilter('◐')">◐</button>
+        <button class="chip" data-filter="✗" onclick="setFilter('✗')">✗</button>
+        <select id="sort" onchange="state.sort=this.value;renderWords()">
+          <option value="new">Newest</option>
+          <option value="old">Oldest</option>
+          <option value="hz">汉字 A–Z</option>
+        </select>
+      </div>
+    </div>
+    <div id="word-list"></div>
+  </section>
+
+  <!-- SENTENCES -->
+  <section id="panel-sentences" class="panel" style="display:none">
+    <div class="card">
+      <input id="s-hz" placeholder="Chinese sentence" autocomplete="off">
+      <input id="s-py" placeholder="Pinyin (optional)" autocomplete="off">
+      <button class="btn" style="width:100%" onclick="addSentence()">+ Add sentence</button>
+    </div>
+    <div id="sentence-list"></div>
+  </section>
+
+  <!-- MISTAKES -->
+  <section id="panel-mistakes" class="panel" style="display:none">
+    <div class="card">
+      <input id="m-wrong" placeholder="I said / wrote…" autocomplete="off">
+      <input id="m-right" placeholder="Correct version…" autocomplete="off">
+      <input id="m-why" placeholder="Why? (optional)" autocomplete="off">
+      <button class="btn" style="width:100%" onclick="addMistake()">+ Log mistake</button>
+    </div>
+    <div id="mistake-list"></div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="panel-quiz" class="panel" style="display:none">
+    <div id="quiz-area"></div>
+  </section>
+
+  <!-- STATS -->
+  <section id="panel-stats" class="panel" style="display:none">
+    <div id="stats-area"></div>
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="handleImport(event)">
+    <div class="section-title">Backup & data</div>
+    <div class="card">
+      <button class="btn ghost" style="width:100%;margin-bottom:8px" onclick="exportData()">⬇ Export backup (.json)</button>
+      <button class="btn ghost" style="width:100%;margin-bottom:8px" onclick="document.getElementById('importFile').click()">⬆ Import backup</button>
+      <button class="btn ghost" style="width:100%" onclick="exportCSV()">📊 Export words to CSV (for Anki)</button>
+    </div>
+    <div style="text-align:center;margin-top:20px">
+      <button class="icon" style="color:var(--danger);font-size:12px" onclick="resetAll()">Erase everything</button>
+    </div>
+  </section>
+</main>
+
+<nav>
+  <button class="nav-btn active" data-tab="words" onclick="setTab('words')"><span>词</span>Words</button>
+  <button class="nav-btn" data-tab="sentences" onclick="setTab('sentences')"><span>句</span>Sent.</button>
+  <button class="nav-btn" data-tab="mistakes" onclick="setTab('mistakes')"><span>错</span>Mistakes</button>
+  <button class="nav-btn" data-tab="quiz" onclick="setTab('quiz')"><span>测</span>Quiz</button>
+  <button class="nav-btn" data-tab="stats" onclick="setTab('stats')"><span>统</span>Stats</button>
+</nav>
+
+<div id="modal" class="modal" style="display:none">
+  <div class="modal-box">
+    <h3 id="modal-title">Edit</h3>
+    <div id="modal-fields"></div>
+    <div class="modal-actions">
+      <button class="btn ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn" onclick="saveEdit()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const store={words:[],sentences:[],mistakes:[]};
+const state={tab:'words',search:'',filter:'all',sort:'new',editing:null,dark:localStorage.getItem('cn_dark')==='1',
+  quiz:{current:null,revealed:false,done:0,correct:0,dir:'zh'}};
+
+/* ---------- DATA ---------- */
+function load(){
+  store.words=JSON.parse(localStorage.getItem('cn_words')||'[]');
+  store.sentences=JSON.parse(localStorage.getItem('cn_sentences')||'[]');
+  store.mistakes=JSON.parse(localStorage.getItem('cn_mistakes')||'[]');
+  normalize();
+}
+function normalize(){
+  let changed=false;
+  ['words','sentences','mistakes'].forEach(k=>{
+    store[k].forEach(it=>{
+      if(!it.id){it.id=Date.now()+Math.random().toString(36).slice(2,7);changed=true}
+      if(!it.created){it.created=Date.now();changed=true}
+      if(k==='words'&&!it.mark){it.mark='◐';changed=true}
+    });
+  });
+  if(changed)save();
+}
+function save(){
+  localStorage.setItem('cn_words',JSON.stringify(store.words));
+  localStorage.setItem('cn_sentences',JSON.stringify(store.sentences));
+  localStorage.setItem('cn_mistakes',JSON.stringify(store.mistakes));
+}
+function esc(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function markClass(m){return m==='✓'?'m-ok':m==='✗'?'m-bad':'m-mid'}
+
+/* ---------- TEXT TO SPEECH ---------- */
+function speak(text){
+  if(!text||!window.speechSynthesis)return;
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='zh-CN';u.rate=0.85;
+  speechSynthesis.speak(u);
+}
+function speakById(type,id){
+  const it=store[type].find(x=>x.id===id);
+  if(it)speak(it.hz||it.wrong||'');
+}
+
+/* ---------- ADD ---------- */
+function addWord(){
+  const hz=document.getElementById('w-hz').value.trim();
+  if(!hz)return;
+  store.words.unshift({id:Date.now()+Math.random().toString(36).slice(2,7),created:Date.now(),
+    hz,py:document.getElementById('w-py').value.trim(),
+    mean:document.getElementById('w-mean').value.trim(),
+    mark:document.getElementById('w-mark').value});
+  ['w-hz','w-py','w-mean'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('w-hz').focus();
+  save();renderWords();
+}
+function addSentence(){
+  const hz=document.getElementById('s-hz').value.trim();
+  if(!hz)return;
+  store.sentences.unshift({id:Date.now()+Math.random().toString(36).slice(2,7),created:Date.now(),
+    hz,py:document.getElementById('s-py').value.trim()});
+  ['s-hz','s-py'].forEach(i=>document.getElementById(i).value='');
+  save();renderSentences();
+}
+function addMistake(){
+  const wrong=document.getElementById('m-wrong').value.trim();
+  if(!wrong)return;
+  store.mistakes.unshift({id:Date.now()+Math.random().toString(36).slice(2,7),created:Date.now(),
+    wrong,right:document.getElementById('m-right').value.trim(),
+    why:document.getElementById('m-why').value.trim()});
+  ['m-wrong','m-right','m-why'].forEach(i=>document.getElementById(i).value='');
+  save();renderMistakes();
+}
+
+/* ---------- DELETE ---------- */
+function del(type,id){
+  if(!confirm('Delete this?'))return;
+  store[type]=store[type].filter(x=>x.id!==id);
+  save();render();
+}
+
+/* ---------- EDIT ---------- */
+function openEdit(type,id){
+  const it=store[type].find(x=>x.id===id);
+  if(!it)return;
+  state.editing={type,id};
+  const f=document.getElementById('modal-fields');
+  if(type==='words'){
+    document.getElementById('modal-title').textContent='Edit word';
+    f.innerHTML=`
+      <input id="e1" value="${esc(it.hz)}" placeholder="汉字">
+      <input id="e2" value="${esc(it.py)}" placeholder="Pinyin">
+      <input id="e3" value="${esc(it.mean)}" placeholder="Meaning">
+      <select id="e4">
+        <option value="✓" ${it.mark==='✓'?'selected':''}>✓ Can use</option>
+        <option value="◐" ${it.mark==='◐'?'selected':''}>◐ Recognize</option>
+        <option value="✗" ${it.mark==='✗'?'selected':''}>✗ Keep forgetting</option>
+      </select>`;
+  }else if(type==='sentences'){
+    document.getElementById('modal-title').textContent='Edit sentence';
+    f.innerHTML=`<input id="e1" value="${esc(it.hz)}" placeholder="Sentence">
+      <input id="e2" value="${esc(it.py)}" placeholder="Pinyin">`;
+  }else{
+    document.getElementById('modal-title').textContent='Edit mistake';
+    f.innerHTML=`<input id="e1" value="${esc(it.wrong)}" placeholder="Wrong">
+      <input id="e2" value="${esc(it.right)}" placeholder="Correct">
+      <input id="e3" value="${esc(it.why||'')}" placeholder="Why?">`;
+  }
+  document.getElementById('modal').style.display='flex';
+}
+function saveEdit(){
+  if(!state.editing)return;
+  const {type,id}=state.editing;
+  const it=store[type].find(x=>x.id===id);
+  if(!it)return closeModal();
+  const g=i=>{const el=document.getElementById('e'+i);return el?el.value.trim():''};
+  if(type==='words'){it.hz=g(1);it.py=g(2);it.mean=g(3);it.mark=g(4)||it.mark}
+  if(type==='sentences'){it.hz=g(1);it.py=g(2)}
+  if(type==='mistakes'){it.wrong=g(1);it.right=g(2);it.why=g(3)}
+  save();closeModal();render();
+}
+function closeModal(){
+  state.editing=null;
+  document.getElementById('modal').style.display='none';
+}
+
+/* ---------- RENDER: WORDS ---------- */
+function renderWords(){
+  const q=state.search.toLowerCase();
+  let list=store.words.filter(w=>{
+    if(state.filter!=='all'&&w.mark!==state.filter)return false;
+    if(!q)return true;
+    return (w.hz+' '+w.py+' '+w.mean).toLowerCase().includes(q);
+  });
+  if(state.sort==='new')list.sort((a,b)=>b.created-a.created);
+  else if(state.sort==='old')list.sort((a,b)=>a.created-b.created);
+  else list.sort((a,b)=>a.hz.localeCompare(b.hz,'zh'));
+  document.getElementById('word-list').innerHTML=list.length?list.map(w=>`
+    <div class="item">
+      <div class="item-main">
+        <div class="hz-row">
+          <span class="hz">${esc(w.hz)}</span>
+          <button class="icon" onclick="speakById('words','${w.id}')">🔊</button>
+          <span class="mark ${markClass(w.mark)}">${w.mark}</span>
+        </div>
+        ${w.py?`<div class="py">${esc(w.py)}</div>`:''}
+        ${w.mean?`<div class="mean">${esc(w.mean)}</div>`:''}
+      </div>
+      <div class="actions">
+        <button class="icon" onclick="openEdit('words','${w.id}')">✏️</button>
+        <button class="icon" onclick="del('words','${w.id}')">🗑</button>
+      </div>
+    </div>`).join(''):'<div class="empty">No words here yet.</div>';
+}
+
+/* ---------- RENDER: SENTENCES ---------- */
+function renderSentences(){
+  document.getElementById('sentence-list').innerHTML=store.sentences.length?store.sentences.map(s=>`
+    <div class="item">
+      <div class="item-main">
+        <div class="hz-row">
+          <span class="hz" style="font-size:17px">${esc(s.hz)}</span>
+          <button class="icon" onclick="speakById('sentences','${s.id}')">🔊</button>
+        </div>
+        ${s.py?`<div class="py">${esc(s.py)}</div>`:''}
+      </div>
+      <div class="actions">
+        <button class="icon" onclick="openEdit('sentences','${s.id}')">✏️</button>
+        <button class="icon" onclick="del('sentences','${s.id}')">🗑</button>
+      </div>
+    </div>`).join(''):'<div class="empty">No sentences yet. Add one you actually said today.</div>';
+}
+
+/* ---------- RENDER: MISTAKES ---------- */
+function renderMistakes(){
+  document.getElementById('mistake-list').innerHTML=store.mistakes.length?store.mistakes.map(m=>`
+    <div class="item">
+      <div class="item-main">
+        <div class="mean" style="color:var(--bad)">✗ ${esc(m.wrong)}</div>
+        ${m.right?`<div class="py">✓ ${esc(m.right)}</div>`:''}
+        ${m.why?`<div class="mean" style="font-size:12px">${esc(m.why)}</div>`:''}
+      </div>
+      <div class="actions">
+        <button class="icon" onclick="openEdit('mistakes','${m.id}')">✏️</button>
+        <button class="icon" onclick="del('mistakes','${m.id}')">🗑</button>
+      </div>
+    </div>`).join(''):'<div class="empty">No mistakes logged. This tab is gold — fill it.</div>';
+}
+
+/* ---------- QUIZ ---------- */
+function nextQuizCard(){
+  const words=store.words;
+  if(!words.length){state.quiz.current=null;return}
+  const pool=words.filter(x=>!state.quiz.current||x.id!==state.quiz.current.id);
+  const source=pool.length?pool:words;
+  const weighted=[];
+  source.forEach(x=>{
+    const n=x.mark==='✗'?3:x.mark==='◐'?2:1;
+    for(let i=0;i<n;i++)weighted.push(x);
+  });
+  state.quiz.current=weighted[Math.floor(Math.random()*weighted.length)];
+  state.quiz.revealed=false;
+}
+function revealQuiz(){state.quiz.revealed=true;renderQuiz()}
+function answerQuiz(mark){
+  const c=state.quiz.current;
+  if(!c)return;
+  const w=store.words.find(x=>x.id===c.id);
+  if(w)w.mark=mark;
+  state.quiz.done++;
+  if(mark==='✓')state.quiz.correct++;
+  save();nextQuizCard();renderQuiz();renderStats();
+}
+function setQuizDir(d){state.quiz.dir=d;renderQuiz()}
+function renderQuiz(){
+  const el=document.getElementById('quiz-area');
+  if(!store.words.length){
+    el.innerHTML='<div class="empty">Add some words first, then come back to quiz yourself.</div>';
+    return;
+  }
+  if(!state.quiz.current)nextQuizCard();
+  const c=state.quiz.current;
+  const zh=state.quiz.dir==='zh';
+  const front=zh?c.hz:(c.mean||c.hz);
+  const back=zh?[c.py,c.mean].filter(Boolean).join(' · '):[c.hz,c.py].filter(Boolean).join(' · ');
+  el.innerHTML=`
+    <div class="quiz-progress">Session: ${state.quiz.done} reviewed · ${state.quiz.correct} correct</div>
+    <div class="quiz-card" onclick="revealQuiz()">
+      <div class="quiz-front">${esc(front)}</div>
+      ${state.quiz.revealed?`<div class="quiz-back">${esc(back)}</div>`:`<div class="quiz-hint">tap to reveal</div>`}
+    </div>
+    ${state.quiz.revealed?`
+      <div class="quiz-btns">
+        <button class="btn danger" onclick="answerQuiz('✗')">Again ✗</button>
+        <button class="btn mid" onclick="answerQuiz('◐')">Almost ◐</button>
+        <button class="btn ok" onclick="answerQuiz('✓')">Got it ✓</button>
+      </div>`:''}
+    <div class="quiz-toggle">
+      <button class="chip ${zh?'active':''}" onclick="setQuizDir('zh')">中 → EN</button>
+      <button class="chip ${!zh?'active':''}" onclick="setQuizDir('en')">EN → 中</button>
+    </div>`;
+}
+
+/* ---------- STATS ---------- */
+function renderStats(){
+  const total=store.words.length;
+  const byMark={'✓':0,'◐':0,'✗':0};
+  store.words.forEach(w=>byMark[w.mark]=(byMark[w.mark]||0)+1);
+  const weekAgo=Date.now()-7*864e5;
+  const thisWeek=store.words.filter(w=>w.created>weekAgo).sort((a,b)=>b.created-a.created);
+  const pct=n=>total?Math.round(n/total*100):0;
+
+  document.getElementById('stats-area').innerHTML=`
+    <div class="stat-grid">
+      <div class="stat"><b>${total}</b><small>words</small></div>
+      <div class="stat"><b>${store.sentences.length}</b><small>sentences</small></div>
+      <div class="stat"><b>${store.mistakes.length}</b><small>mistakes</small></div>
+    </div>
+    <div class="card">
+      <div class="section-title" style="margin-top:0">Word strength</div>
+      <div class="bar-row"><span class="lbl m-ok">✓</span><div class="bar"><i style="width:${pct(byMark['✓'])}%;background:var(--ok)"></i></div><span class="num">${byMark['✓']}</span></div>
+      <div class="bar-row"><span class="lbl m-mid">◐</span><div class="bar"><i style="width:${pct(byMark['◐'])}%;background:var(--mid)"></i></div><span class="num">${byMark['◐']}</span></div>
+      <div class="bar-row"><span class="lbl m-bad">✗</span><div class="bar"><i style="width:${pct(byMark['✗'])}%;background:var(--bad)"></i></div><span class="num">${byMark['✗']}</span></div>
+      ${byMark['✗']?`<button class="btn ghost" style="width:100%;margin-top:10px" onclick="setTab('quiz')">🎯 Review your ${byMark['✗']} weak words</button>`:''}
+    </div>
+    <div class="card">
+      <div class="section-title" style="margin-top:0">Added this week (${thisWeek.length})</div>
+      ${thisWeek.length?thisWeek.map(w=>`
+        <div class="week-item">
+          <span>${esc(w.hz)} <span class="py">${esc(w.py)}</span></span>
+          <span class="mark ${markClass(w.mark)}">${w.mark}</span>
+        </div>`).join(''):'<div class="empty" style="padding:16px 0">Nothing this week yet.</div>'}
+    </div>`;
+}
+
+/* ---------- TABS / FILTER / DARK ---------- */
+function setTab(t){
+  state.tab=t;
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));
+  document.querySelectorAll('.panel').forEach(p=>p.style.display=p.id==='panel-'+t?'block':'none');
+  render();
+}
+function setFilter(f){
+  state.filter=f;
+  document.querySelectorAll('.chip[data-filter]').forEach(c=>c.classList.toggle('active',c.dataset.filter===f));
+  renderWords();
+}
+function toggleDark(){
+  state.dark=!state.dark;
+  localStorage.setItem('cn_dark',state.dark?'1':'0');
+  applyTheme();
+}
+function applyTheme(){
+  document.body.setAttribute('data-theme',state.dark?'dark':'light');
+  document.getElementById('darkBtn').textContent=state.dark?'☀️':'🌙';
+}
+
+/* ---------- STREAK ---------- */
+function updateStreak(){
+  let s=JSON.parse(localStorage.getItem('cn_streak')||'{"days":0,"last":null}');
+  const today=new Date().toDateString();
+  const yest=new Date(Date.now()-864e5).toDateString();
+  if(s.last!==today){
+    s.days=s.last===yest?s.days+1:1;
+    s.last=today;
+    localStorage.setItem('cn_streak',JSON.stringify(s));
+  }
+  document.getElementById('streak').textContent=s.days;
+}
+
+/* ---------- BACKUP ---------- */
+function download(content,name,type){
+  const blob=new Blob([content],{type});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);a.download=name;a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+function exportData(){
+  download(JSON.stringify({words:store.words,sentences:store.sentences,mistakes:store.mistakes},null,2),
+    'my-chinese-book-backup.json','application/json');
+}
+function exportCSV(){
+  const rows=[['汉字','Pinyin','Meaning','Mark','Added']];
+  store.words.forEach(w=>rows.push([w.hz,w.py,w.mean,w.mark,new Date(w.created).toLocaleDateString()]));
+  const csv=rows.map(r=>r.map(c=>`"${String(c||'').replace(/"/g,'""')}"`).join(',')).join('\n');
+  download('\ufeff'+csv,'chinese-words.csv','text/csv;charset=utf-8');
+}
+function handleImport(e){
+  const file=e.target.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    try{
+      const data=JSON.parse(ev.target.result);
+      let added=0;
+      ['words','sentences','mistakes'].forEach(k=>{
+        (data[k]||[]).forEach(it=>{
+          if(!it.id)it.id=Date.now()+Math.random().toString(36).slice(2,7);
+          if(!store[k].some(x=>x.id===it.id)){store[k].push(it);added++}
+        });
+      });
+      normalize();save();render();
+      alert('Imported '+added+' new items. 🎉');
+    }catch(err){alert('Could not read that file. Make sure it is a .json backup.')}
+  };
+  reader.readAsText(file);
+  e.target.value='';
+}
+function resetAll(){
+  if(!confirm('This deletes ALL your words, sentences and mistakes.'))return;
+  if(!confirm('Really sure? Export a backup first if you need one.'))return;
+  localStorage.removeItem('cn_words');
+  localStorage.removeItem('cn_sentences');
+  localStorage.removeItem('cn_mistakes');
+  store.words=[];store.sentences=[];store.mistakes=[];
+  render();
+}
+
+/* ---------- INIT ---------- */
+function render(){
+  if(state.tab==='words')renderWords();
+  if(state.tab==='sentences')renderSentences();
+  if(state.tab==='mistakes')renderMistakes();
+  if(state.tab==='quiz')renderQuiz();
+  if(state.tab==='stats')renderStats();
+}
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape')closeModal();
+  if(e.key==='Enter'){
+    if(state.tab==='words'&&document.activeElement.id.startsWith('w-'))addWord();
+    if(state.tab==='sentences'&&document.activeElement.id.startsWith('s-'))addSentence();
+    if(state.tab==='mistakes'&&document.activeElement.id.startsWith('m-'))addMistake();
+  }
+});
+load();
+applyTheme();
+updateStreak();
+render();
+</script>
+</body>
+</html>
